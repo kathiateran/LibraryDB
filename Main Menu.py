@@ -43,7 +43,29 @@ my_db.commit()
 # Author
 author_input = "INSERT INTO author(author_id, author_name)" \
                "VALUES(%s, %s)"
-author_info = [(1231, "Malcolm X")]
+author_info = [
+    (1231, "Malcolm X"),
+    (186, "Owens Q"),
+    (786, "Duke U"),
+    (179, "Grisham A"),
+    (2985, "Jewell B"),
+    (7891, "Chouinard C"),
+    (1749, "Westover A"),
+    (4798, "Michaelides P"),
+    (156, "Hunter J"),
+    (79856, "Ng W"),
+    (1354, "Greyson V"),
+    (4798, "McMorris T"),
+    (17984, "Driscoll H"),
+    (47985, "Fisher P"),
+    (17985, "Tigner E"),
+    (2897, "Lambert F"),
+    (1648, "Ranald Q"),
+    (1358, "Robotham K"),
+    (17958, "Vanderah W"),
+    (142, "Coben H"),
+    (1785, "Gottlieb Y")
+]
 
 my_cursor.executemany(author_input, author_info)
 
