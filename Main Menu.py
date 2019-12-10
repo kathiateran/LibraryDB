@@ -34,7 +34,14 @@ my_cursor.execute("CREATE TABLE IF NOT EXISTS publisher(publisher_id INTEGER(10)
 # Branch
 branch_input = "INSERT INTO library_branch(lib_id, branch_name, branch_location)" \
                "VALUES(%s, %s, %s)"
-library_branch = [(1234, "Sterling", "Manhattan")]
+library_branch = [
+    (1234, "Sterling", "Manhattan"),
+    (84, "Lloyd", "Queens"),
+    (147, "General Ford", "Brooklyn"),
+    (269, "Robert Hill", "Long Island")
+    (74, "Library of Modern Arts", "Staten Island")
+    (1, "New York Institute of Technology Library", "Manhatten")
+]
 
 my_cursor.executemany(branch_input, library_branch)
 
@@ -80,7 +87,8 @@ publisher_info = [
     (1219, "12 Murry Hill Road, Queens, New York, U.S., 11375"),
     (789, "W 61 Street, Manhatten, New York, U.S., 11323")
     (1415, "E 117 Street, Cleveland, Ohio, U.S. 44106),
-    (945, "6 Pine Brook Blvd, Hartsdale, New York, 13723)
+    (945, "6 Pine Brook Blvd, Hartsdale, New York, 13723),
+     (14758, "8 Main Street, Hightstown, New Jersey, 08520")
 ]
 
 my_cursor.executemany(publisher_input, publisher_info)
