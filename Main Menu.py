@@ -75,7 +75,13 @@ my_db.commit()
 # Publisher
 publisher_input = "INSERT INTO publisher(publisher_id, publisher_address)" \
                "VALUES(%s, %s)"
-publisher_info = [(1231, "Mulberry Ave., London, UK")]
+publisher_info = [
+    (1231, "5 Mulberry Ave., London, UK"),
+    (1219, "12 Murry Hill Road, Queens, New York, U.S., 11375"),
+    (789, "W 61 Street, Manhatten, New York, U.S., 11323")
+    (1415, "E 117 Street, Cleveland, Ohio, U.S. 44106),
+    (945, "6 Pine Brook Blvd, Hartsdale, New York, 13723)
+]
 
 my_cursor.executemany(publisher_input, publisher_info)
 
