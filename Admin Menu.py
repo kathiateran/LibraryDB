@@ -255,7 +255,7 @@ def average_fine():
     sql_command =   "SELECT COUNT(Reader_Record) * 0.2 /" \
 		                "(SELECT DISTINCT COUNT(reader_id)" \
 		                "FROM reader_data)" \
-                    "FROM BorrowRecord WHERE RDateTime - BDateTime >= 20"
+                    "FROM BorrowRecord WHERE rdatetime - bdatetime >= 20"
     
     my_cursor.execute(sql_command)
     fine_result = my_cursor.fetchall()
