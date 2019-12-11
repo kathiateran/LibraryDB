@@ -20,14 +20,14 @@ my_cursor = my_db.cursor()
 
 # TABLES
 # library Branch
-my_cursor.execute("CREATE TABLE IF NOT EXISTS library_branch(lib_id INTEGER(10) PRIMARY KEY, "
+my_cursor.execute("CREATE TABLE IF NOT EXISTS library_branch(lib_id INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY, "
                   "branch_name VARCHAR(155), branch_location VARCHAR(255))")
 
 # Author
-my_cursor.execute("CREATE TABLE IF NOT EXISTS author(author_id INTEGER(10) PRIMARY KEY, author_name VARCHAR(155))")
+my_cursor.execute("CREATE TABLE IF NOT EXISTS author(author_id INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY, author_name VARCHAR(155))")
 
 # Publisher
-my_cursor.execute("CREATE TABLE IF NOT EXISTS publisher(publisher_id INTEGER(10) PRIMARY KEY, "
+my_cursor.execute("CREATE TABLE IF NOT EXISTS publisher(publisher_id INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY, "
                   "publisher_address VARCHAR(255))")
 
 # DATA INPUT
