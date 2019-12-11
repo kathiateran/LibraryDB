@@ -33,6 +33,17 @@ my_cursor.execute("CREATE TABLE IF NOT EXISTS reader_data(reader_id INTEGER(10) 
 # book reader, Borrow date, return date
 # my_cursor.execute("ALTER TABLE book_data ADD(book_reader VARCHAR(200), borrow_date DATE, return_date DATE)")
 
+my_cursor.execute(
+		"CREATE TABLE borrowRecord (" \
+		"bdatetime DATE, rdatetime DATE," \
+		"reader_record INTEGER(10), book_id_record INTEGER(10), copy_Record INTEGER(10)," \
+		"branch_record INTEGER(10), PRIMARY KEY (bdatetime, book_id_record, copy_record, branch_record)," \
+		"FOREIGN KEY (reader_record) REFERENCES reader_data(reader_id)," \
+		"FOREIGN KEY (book_id_record) REFERENCES book_data(book_id)," \
+		"FOREIGN KEY (copy_record) REFERENCES book_data(copy_no)," \
+		"FOREIGN KEY (branch_Rrcord) REFERENCES book_data(book_branch),)"
+)
+
 
 def clear_fields():
     book_id_box.delete(0, END)
