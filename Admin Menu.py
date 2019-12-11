@@ -194,8 +194,14 @@ def top10_borrowers():
     top10_borrowers_list =Tk()
     top10_borrowers_list.title("Top 10 Borrowers in a Branch")
     top10_borrowers_list.geometry("400x400")
+    
+    sql_command = "SELECT reader_record COUNT(reader_record) FROM borrow_record" \
+    "WHERE book_id_record, copy_record, branch_record IN" \
+        "(SELECT book_id FROM book_data WHERE book_branch = (book_branch_id) VALUES(%s))" \
+    "GROUP BY reader_record ORDER BY COUNT(Reader_Record) LIMIT 10"
+    values = (book_branch_box.get())
 
-    my_cursor.execute("SELECT * FROM library_branch") # CHANGE!!
+    my_cursor.execute(sql_command, values)
     borrowers_result = my_cursor.fetchall()
     for x in borrowers_result:
         lookup_label= Label(top10_borrowers_list, text=x)
@@ -207,7 +213,16 @@ def top10_books():
     top10_books_list.title("Top 10 Most Borrowed Books in a Branch")
     top10_books_list.geometry("400x400")
 
-    my_cursor.execute("SELECT * FROM library_branch")  # CHANGE!!
+    sql_command = "SELECT book_id_record COUNT(book_id_record) FROM borrow_record" \
+	"WHERE book_id_record , copy_record, branch_record IN" \
+		"(SELECT book_id, copy_no, book_branch FROM book_data" \
+		"WHERE book_branch = (book_id)" \
+        "VALUES(%s))"
+	"GROUP BY book_id_record , copy_record, branch_record" \
+	"ORDER BY COUNT(book_id_record , copy_record, branch_record) LIMIT 10"
+    values = (book_branch_box.get())
+
+    my_cursor.execute(sql_command, values)
     books_result = my_cursor.fetchall()
     for x in books_result:
         lookup_label = Label(top10_books_list, text=x)
@@ -218,8 +233,13 @@ def average_fine():
     average_fine_list = Tk()
     average_fine_list.title("Average Fine Paid Per Reader")
     average_fine_list.geometry("400x400")
-
-    my_cursor.execute("SELECT * FROM library_branch")  # CHANGE!!
+    
+    sql_command =   "SELECT COUNT(Reader_Record) * 0.2 /" \
+		                "(SELECT DISTINCT COUNT(reader_id)" \
+		                "FROM reader_data)" \
+                    "FROM BorrowRecord WHERE RDateTime - BDateTime >= 20"
+    
+    my_cursor.execute(sql_command)
     fine_result = my_cursor.fetchall()
     for x in fine_result:
         lookup_label = Label(average_fine_list, text=x)
