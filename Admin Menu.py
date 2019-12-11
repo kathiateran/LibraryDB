@@ -19,13 +19,13 @@ my_cursor = my_db.cursor()
 
 # TABLES
 # Book data --> have to figure out how to have composite primary key, AUTO_INCREMENT PRIMARY KEY
-my_cursor.execute("CREATE TABLE IF NOT EXISTS book_data(book_id INTEGER AUTO_INCREMENT, copy_no INTEGER, "
-                  "book_branch VARCHAR(55), book_title VARCHAR(255), book_publisher VARCHAR(55),"
+my_cursor.execute("CREATE TABLE IF NOT EXISTS book_data(book_id INTEGER NOT NULL, copy_no INTEGER NOT NULL AUTO_INCREMENT, "
+                  "book_branch VARCHAR(55) NOT NULL, book_title VARCHAR(255), book_publisher VARCHAR(55),"
                   "book_author VARCHAR(155), publication_date DATE, "
                   "PRIMARY KEY(book_id, copy_no, book_branch))")
 
 # Reader
-my_cursor.execute("CREATE TABLE IF NOT EXISTS reader_data(reader_id INTEGER(10) PRIMARY KEY, "
+my_cursor.execute("CREATE TABLE IF NOT EXISTS reader_data(reader_id INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY, "
                   "reader_name VARCHAR(155),"
                   "reader_address VARCHAR(255), reader_phone INTEGER(20))")
 
