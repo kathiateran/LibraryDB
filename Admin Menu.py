@@ -58,7 +58,10 @@ def add_book():
     my_db.commit()
     clear_fields()
 
-hardcoded_book_data = [
+#Books
+book_input = "INSERT INTO book_data (book_id, copy_no, book_branch, book_title, " \
+                  "book_publisher, book_author, publication_date, book_reader) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"
+hardcoded_book_entities = [
     (1432589468,1,1,AAAAA,1231,1231,11/12/1984,null),
 (1432589468,2,1,AAAAA,1231,1231,11/12/1984,null),
 (1984756821,1,1,Text 1,945,186,9/6/2001,null),
@@ -152,7 +155,11 @@ hardcoded_book_data = [
 (9374824156,1,1234,Study Guide 13,14758,47985,9/17/2003,null),
 (9671586412,1,1234,Codex 14,789,17985,10/1/2015,null)
 ]
-    
+
+my_cursor.executemany(book_input, hardcoded_book_entities)
+
+my_db.commit()
+
 def add_reader():
     sql_command = "INSERT INTO reader_data (reader_id, reader_name, reader_address, reader_phone)" \
                   "VALUES(%s, %s, %s, %s)"
