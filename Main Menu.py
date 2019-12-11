@@ -66,12 +66,6 @@ author_info = [
     (17984, "Driscoll H"),
     (47985, "Fisher P"),
     (17985, "Tigner E"),
-    (2897, "Lambert F"),
-    (1648, "Ranald Q"),
-    (1358, "Robotham K"),
-    (17958, "Vanderah W"),
-    (142, "Coben H"),
-    (1785, "Gottlieb Y")
 ]
 
 my_cursor.executemany(author_input, author_info)
