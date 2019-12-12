@@ -1,0 +1,252 @@
+from tkinter import *
+from PIL import ImageTk,Image
+import mysql.connector
+
+root = Tk()
+root.title('Library Database System')
+root.geometry("800x750")
+
+# MySQL Connection
+my_db = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    passwd="123password",
+    database="LibraryDB"
+)
+# print(mydb)
+
+my_cursor = my_db.cursor()
+
+# TABLES
+my_cursor.execute("CREATE TABLE IF NOT EXISTS publisher(publisher_id INTEGER(10) PRIMARY KEY, "
+                  "publisher_address VARCHAR(255))")
+
+# Author
+my_cursor.execute("CREATE TABLE IF NOT EXISTS author(author_id INTEGER(10) PRIMARY KEY, author_name VARCHAR(155))")
+
+my_cursor.execute("CREATE TABLE IF NOT EXISTS borrow_record(b_date_time DATETIME, r_date_time DATETIME,"
+                  "reader_record INTEGER(10), book_id_record INTEGER(10), "
+                  "copy_record INTEGER(10), branch_record INTEGER(10),"
+                  "PRIMARY KEY(b_date_time, reader_record, book_id_record, copy_record, branch_record))")
+
+# Book data --> have to figure out how to have composite primary key, AUTO_INCREMENT PRIMARY KEY
+my_cursor.execute("CREATE TABLE IF NOT EXISTS book_data(book_id INTEGER(10), copy_no INTEGER(10), "
+                  "lib_id INTEGER(10), book_title VARCHAR(255), publisher_id INTEGER(10),"
+                  "author_id INTEGER(10), publication_date DATE, "
+                  "PRIMARY KEY(book_id, copy_no, lib_id))")
+
+# my_cursor.execute("ALTER TABLE book_data ADD COLUMN book_reader INTEGER(10)")
+#my_cursor.execute("ALTER TABLE reader_data ADD CONSTRAINT FK_pubid FOREIGN KEY(publisher_id) "
+                 # "REFERENCES publisher(publisher_id)")
+# my_cursor.execute("DELETE FROM book_data WHERE copy_no IS NULL OR copy_no=''")
+# my_cursor.execute("ALTER TABLE book_data ADD CONSTRAINT PK_book PRIMARY KEY (book_id, copy_no, lib_id)")
+
+# Reader
+my_cursor.execute("CREATE TABLE IF NOT EXISTS reader_data(reader_id INTEGER(10) PRIMARY KEY, "
+                  "reader_name VARCHAR(155), reader_address VARCHAR(255), reader_phone INTEGER(20))")
+
+
+# book reader, Borrow date, return date
+# my_cursor.execute("ALTER TABLE book_data ADD(book_reader VARCHAR(200), borrow_date DATE, return_date DATE)")
+
+# Author
+my_cursor.execute("CREATE TABLE IF NOT EXISTS author(author_id INTEGER(10) PRIMARY KEY, author_name VARCHAR(155))")
+
+
+def clear_fields():
+    book_id_box.delete(0, END)
+    copy_no_box.delete(0, END)
+    book_title_box.delete(0, END)
+    lib_id_box.delete(0, END)
+    publisher_id_box.delete(0, END)
+    publication_date_box.delete(0, END)
+    reader_name_box.delete(0, END)
+    reader_id_box.delete(0, END)
+    reader_address_box.delete(0, END)
+    reader_phone_box.delete(0, END)
+    author_id_box.delete(0, END)
+
+
+# Database Submissions
+def add_book():
+    sql_command = "INSERT INTO book_data (book_id, copy_no, lib_id, book_title, " \
+                  "publisher_id, author_id, publication_date) VALUES(%s, %s, %s, %s, %s, %s, %s)"
+    values = (book_id_box.get(), copy_no_box.get(), lib_id_box.get(), book_title_box.get(), publisher_id_box.get(),
+              author_id_box.get(), publication_date_box.get())
+    my_cursor.execute(sql_command, values)
+
+    my_db.commit()
+    clear_fields()
+
+
+def add_reader():
+    sql_command = "INSERT INTO reader_data (reader_id, reader_name, reader_address, reader_phone)" \
+                  "VALUES(%s, %s, %s, %s)"
+    values = (reader_id_box.get(), reader_name_box.get(), reader_address_box.get(), reader_phone_box.get())
+    my_cursor.execute(sql_command, values)
+
+    my_db.commit()
+    clear_fields()
+
+
+# SEARCH functions
+def search_records():
+    book_search_list =Tk()
+    book_search_list.title("Book Search Result")
+    book_search_list.geometry("400x400")
+
+    my_cursor.execute("SELECT * FROM book_data WHERE book_title='" + search_book_title_box.get() + "'")
+    s_result = my_cursor.fetchall()
+    print(s_result)
+
+
+# SEARCH function
+def branch_info():
+    branch_info_list = Tk()
+    branch_info_list.title("Branch Information")
+    branch_info_list.geometry("400x400")
+
+    my_cursor.execute("SELECT * FROM library_branch")
+    branch_result = my_cursor.fetchall()
+    for x in branch_result:
+        result_label= Label(branch_info_list, text=x)
+        result_label.pack()
+
+
+def top10_borrowers():
+    top10_borrowers_list =Tk()
+    top10_borrowers_list.title("Top 10 Borrowers in a Branch")
+    top10_borrowers_list.geometry("400x400")
+
+    my_cursor.execute("SELECT * FROM book_data WHERE book_title='" + top10_borrowers_box.get() + "'")
+    s_result = my_cursor.fetchall()
+    print(s_result)
+
+
+def top10_books():
+    top10_books_list = Tk()
+    top10_books_list.title("Top 10 Most Borrowed Books in a Branch")
+    top10_books_list.geometry("400x400")
+
+    my_cursor.execute("SELECT reader_record COUNT(reader_record) FROM borrow_record "
+                      "WHERE book_id_record, copy_record, branch_record IN"
+                      "(SELECT book_id FROM book_data "
+                      "book_branch ='" + top10_books_box.get() + "'"
+                            "GROUP BY reader_record ORDER BY COUNT(Reader_Record) LIMIT 10")
+    s_result = my_cursor.fetchall()
+    print(s_result)
+
+
+def average_fine():
+    average_fine_list = Tk()
+    average_fine_list.title("Average Fine Paid Per Reader")
+    average_fine_list.geometry("400x400")
+
+    my_cursor.execute("SELECT * FROM library_branch")
+    fine_result = my_cursor.fetchall()
+    for x in fine_result:
+        lookup_label = Label(average_fine_list, text=x)
+        lookup_label.pack()
+
+
+# TKINTER
+am_title_label = Label(root, text="Administrative Menu", font=("Helvetica", 20)).grid(row=1, column=2, pady="12")
+
+# BOOK SEARCH
+sb_title_label = Label(root, text="Search Book", font=("Helvetica", 17)).grid(row=2, column=1, pady="12")
+search_book_id_label = Label(root,text="ISBN").grid(row=3, column=0, sticky=E, padx=10)
+search_book_title_label = Label(root,text="Title").grid(row=4, column=0, sticky=E, padx=10)
+search_book_publisher_label = Label(root,text="Publisher").grid(row=5, column=0, sticky=E, padx=10)
+
+# Entry Boxes
+search_book_id_box = Entry(root)
+search_book_id_box.grid(row=3, column=1, pady=5)
+search_book_title_box = Entry(root)
+search_book_title_box.grid(row=4, column=1, pady=5)
+search_book_publisher_box = Entry(root)
+search_book_publisher_box.grid(row=5, column=1, pady=5)
+
+# Search Button
+book_search_button = Button(root, text="Search", command=search_records)
+book_search_button.grid(row=6, column=1, padx=5, pady=10)
+
+# BOOK ADD
+ab_title_label = Label(root, text="Add Book Copy", font=("Helvetica", 17)).grid(row=2, column=3, pady="12")
+book_id_label = Label(root, text="ISBN").grid(row=3, column=2, sticky=E, padx=10)
+copy_no_label = Label(root, text="Copy No.").grid(row=4, column=2, sticky=E, padx=10)
+book_title_label = Label(root, text="Title").grid(row=5, column=2, sticky=E, padx=10)
+lib_id_label = Label(root, text="Branch ID").grid(row=6, column=2, sticky=E, padx=10)
+publisher_id_label = Label(root, text="Publisher ID").grid(row=7, column=2, sticky=E, padx=10)
+author_id_label = Label(root, text="Author ID").grid(row=8, column=2, sticky=E, padx=10)
+publication_date_label = Label(root, text="Publication Date").grid(row=9, column=2, sticky=E, padx=10)
+
+# Entries
+book_id_box = Entry(root)
+book_id_box.grid(row=3, column=3, sticky=N, pady=10)
+copy_no_box = Entry(root)
+copy_no_box.grid(row=4, column=3, sticky=N, pady=10)
+book_title_box = Entry(root)
+book_title_box.grid(row=5, column=3, sticky=N, pady=10)
+lib_id_box = Entry(root)
+lib_id_box.grid(row=6, column=3, sticky=N, pady=10)
+publisher_id_box = Entry(root)
+publisher_id_box.grid(row=7, sticky=N, column=3, pady=10)
+author_id_box = Entry(root)
+author_id_box.grid(row=8, column=3, sticky=N, pady=10)
+publication_date_box = Entry(root)
+publication_date_box.grid(row=9, column=3, sticky=N, pady=10)
+
+# Action Button
+book_add_button = Button(root, text="Add Book", command=add_book).grid(row=10, column=3, padx=10, pady=10)
+
+# READER ADD
+ar_title_label = Label(root, text="Add New Reader", font=("Helvetica", 17)).grid(row=7, column=1, pady="15")
+reader_name_label = Label(root, text="Name").grid(row=8, column=0, sticky=E, padx=10)
+reader_id_label = Label(root, text="ID").grid(row=9, column=0, sticky=E, padx=10)
+reader_address_label = Label(root, text="Address").grid(row=10, column=0, sticky=E, padx=10)
+reader_phone_label = Label(root, text="Phone #").grid(row=11, column=0, sticky=E, padx=10)
+
+# Entry boxes
+reader_name_box = Entry(root)
+reader_name_box.grid(row=8, column=1, pady=5)
+reader_id_box = Entry(root)
+reader_id_box.grid(row=9, column=1, pady=5)
+reader_address_box = Entry(root)
+reader_address_box.grid(row=10, column=1, pady=5)
+reader_phone_box = Entry(root)
+reader_phone_box.grid(row=11, column=1, pady=5)
+
+# Button
+reader_add_button = Button(root, text="Add Reader", command=add_reader).grid(row=12, column=1, padx=10, pady=10)
+
+# Info buttons
+top10_borrowers_label = Label(root, text="Top 10 borrowers in a branch").grid(row=12, column=3, sticky=W, padx=10)
+topborrowers_enter_label = Label(root, text="Enter Branch ID:").grid(row=13, column=2, sticky=E, padx=10)
+top10_borrowers_box = Entry(root)
+top10_borrowers_box.grid(row=13, column=3, sticky=N, pady=5)
+top10_borrowers_button = Button(root, text="Show", command= top10_borrowers).grid(row=12, column=2, sticky=E, padx=10, pady=10)
+
+top10_books_label = Label(root, text="Top 10 most borrowed books in a branch").grid(row=14, column=3, sticky=W, padx=10)
+topbooks_enter_label = Label(root, text="Enter Branch ID:").grid(row=15, column=2, sticky=E, padx=10)
+top10_books_box = Entry(root)
+top10_books_box.grid(row=15, column=3, sticky=N, pady=5)
+top10_books_button = Button(root, text="Show", command= top10_books).grid(row=14, column=2, sticky=E, padx=10, pady=10)
+
+average_fine_label = Label(root, text="Average Fine Paid per Reader.").grid(row=14, column=1, sticky=W, padx=10)
+average_fine_button = Button(root, text="Show", command= average_fine).grid(row=14, column=0, sticky=E, padx=10, pady=10)
+
+branch_info_button = Button(root, text="BRANCH INFO", command=branch_info).grid(row=15, sticky=S, column=1, padx=10, pady=10)
+
+
+my_cursor.execute("SELECT * FROM book_data")
+result = my_cursor.fetchall()
+for x in result:
+        print(x)
+
+my_cursor.execute("SELECT * FROM reader_data")
+result = my_cursor.fetchall()
+for x in result:
+        print(x)
+
+
+root.mainloop()
